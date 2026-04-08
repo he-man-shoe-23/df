@@ -1,0 +1,51 @@
+business_name,category,state,city,vehicle_type,distance,days,fleet,years,petrol_price,cng_price,electricity_price,petrol_vehicle_cost,ev_vehicle_cost,cng_vehicle_cost
+Courier_Business_1,Courier,Karnataka,Bangalore,Tata Ace,109,22,4,6,105,80,8,665494,1039914,574602
+Kirana_Business_2,Kirana,West Bengal,Kolkata,Generic,126,26,1,4,109,76,9,616818,832542,728008
+Ride Sharing_Business_3,Ride Sharing,Telangana,Hyderabad,Generic,99,25,10,5,109,86,7,520870,897288,729379
+Kirana_Business_4,Kirana,Gujarat,Ahmedabad,Tata Ace,88,28,6,6,98,90,8,682350,1088215,660345
+Delivery_Business_5,Delivery,Rajasthan,Jaipur,Generic,132,26,8,7,105,89,7,679807,1018570,672653
+Retail_Business_6,Retail,Tamil Nadu,Chennai,Generic,138,22,6,6,102,78,8,641843,913699,643175
+Delivery_Business_7,Delivery,Telangana,Hyderabad,Generic,53,24,1,5,96,87,6,580960,944799,588491
+Courier_Business_8,Courier,West Bengal,Kolkata,Tata Ace,28,23,6,7,101,81,9,680338,860760,729377
+Courier_Business_9,Courier,Tamil Nadu,Chennai,Generic,107,24,2,6,108,82,7,663552,913746,613366
+Hotel_Business_10,Hotel,Karnataka,Bangalore,Generic,97,23,1,5,105,77,9,502218,1084131,662066
+Kirana_Business_11,Kirana,Delhi,Delhi,Generic,56,27,10,4,102,84,10,501104,901670,667003
+Retail_Business_12,Retail,Karnataka,Bangalore,Tata Ace,34,23,1,4,110,76,7,615844,1017372,760121
+Retail_Business_13,Retail,West Bengal,Kolkata,Tata Ace,146,24,9,7,106,79,9,613046,1025709,576034
+Retail_Business_14,Retail,West Bengal,Kolkata,Generic,68,27,10,6,100,76,9,515223,823581,591799
+Ride Sharing_Business_15,Ride Sharing,Tamil Nadu,Chennai,Tata Ace,32,24,6,4,108,75,8,692285,817143,563048
+Courier_Business_16,Courier,Uttar Pradesh,Lucknow,Generic,37,26,6,6,105,80,6,577579,821171,667255
+Delivery_Business_17,Delivery,Delhi,Delhi,Tata Ace,45,24,6,6,101,89,8,657497,929698,686616
+Hotel_Business_18,Hotel,Gujarat,Ahmedabad,Generic,55,23,5,3,106,87,6,620309,1016331,645582
+Courier_Business_19,Courier,Tamil Nadu,Chennai,Generic,43,28,6,3,100,78,9,596561,860354,762582
+Logistics_Business_20,Logistics,Karnataka,Bangalore,Tata Ace,125,28,10,6,103,85,10,669100,926002,768991
+Delivery_Business_21,Delivery,West Bengal,Kolkata,Tata Ace,146,22,6,3,99,86,10,544791,807536,575491
+Logistics_Business_22,Logistics,Telangana,Hyderabad,Tata Ace,125,23,2,5,104,82,8,521786,1058393,602686
+Hotel_Business_23,Hotel,Tamil Nadu,Chennai,Tata Ace,53,27,1,5,108,81,8,500185,938376,656740
+Retail_Business_24,Retail,Tamil Nadu,Chennai,Tata Ace,33,26,10,6,95,78,7,595802,1075035,701027
+Ride Sharing_Business_25,Ride Sharing,Tamil Nadu,Chennai,Generic,133,25,6,7,95,76,8,667811,842281,673204
+Logistics_Business_26,Logistics,Delhi,Delhi,Generic,147,26,6,4,102,82,7,503311,890159,787678
+Courier_Business_27,Courier,Delhi,Delhi,Tata Ace,25,27,1,4,103,83,6,646656,888955,577061
+Logistics_Business_28,Logistics,Gujarat,Ahmedabad,Tata Ace,108,23,3,4,105,81,6,585098,940521,672148
+Delivery_Business_29,Delivery,Tamil Nadu,Chennai,Tata Ace,50,23,5,4,100,89,6,581664,814108,609358
+Ride Sharing_Business_30,Ride Sharing,Rajasthan,Jaipur,Generic,134,22,6,4,102,87,10,689269,876050,653309
+Logistics_Business_31,Logistics,Gujarat,Ahmedabad,Tata Ace,87,25,3,5,108,86,9,612619,854499,628922
+Courier_Business_32,Courier,Gujarat,Ahmedabad,Tata Ace,47,23,7,4,108,79,10,652017,978028,597087
+Ride Sharing_Business_33,Ride Sharing,Punjab,Ludhiana,Generic,85,28,3,5,98,90,9,628801,962576,672840
+Delivery_Business_34,Delivery,Karnataka,Bangalore,Tata Ace,54,27,5,6,98,76,6,646890,903643,719117
+Ride Sharing_Business_35,Ride Sharing,Delhi,Delhi,Generic,100,22,6,4,110,88,10,532744,867992,605346
+Hotel_Business_36,Hotel,Karnataka,Bangalore,Tata Ace,120,24,3,4,107,81,6,545898,1002462,583994
+Ride Sharing_Business_37,Ride Sharing,Delhi,Delhi,Generic,107,23,3,5,99,80,6,625581,1046945,750546
+Logistics_Business_38,Logistics,Maharashtra,Mumbai,Generic,102,27,3,4,96,84,10,620035,964948,698703
+Hotel_Business_39,Hotel,Karnataka,Bangalore,Tata Ace,52,26,2,6,101,82,10,515685,870696,700412
+Delivery_Business_40,Delivery,Uttar Pradesh,Lucknow,Generic,101,23,2,7,108,83,8,672377,928542,667504
+Hotel_Business_41,Hotel,West Bengal,Kolkata,Generic,58,25,8,6,107,82,6,520334,1026023,753512
+Kirana_Business_42,Kirana,Tamil Nadu,Chennai,Generic,93,25,3,4,106,87,9,563999,1007712,554683
+Logistics_Business_43,Logistics,Rajasthan,Jaipur,Tata Ace,121,23,2,6,101,80,6,597777,856940,768965
+Ride Sharing_Business_44,Ride Sharing,Karnataka,Bangalore,Generic,98,23,7,7,101,81,9,666028,988761,575173
+Delivery_Business_45,Delivery,Rajasthan,Jaipur,Tata Ace,92,24,5,5,109,87,7,564577,996963,790881
+Delivery_Business_46,Delivery,Gujarat,Ahmedabad,Tata Ace,123,28,4,6,95,78,6,681313,1077459,583112
+Hotel_Business_47,Hotel,Gujarat,Ahmedabad,Tata Ace,117,25,1,6,108,79,9,553433,1020424,724791
+Kirana_Business_48,Kirana,Uttar Pradesh,Lucknow,Generic,108,22,8,7,97,85,8,541438,967514,584191
+Ride Sharing_Business_49,Ride Sharing,Gujarat,Ahmedabad,Generic,120,24,4,6,109,83,8,567891,933987,597361
+Logistics_Business_50,Logistics,Karnataka,Bangalore,Tata Ace,85,23,7,7,99,81,10,578403,1084576,579230
