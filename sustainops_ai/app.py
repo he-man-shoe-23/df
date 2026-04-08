@@ -1,184 +1,174 @@
 import streamlit as st
 import pandas as pd
 
-# --- CONSTANTS ---
-KM_PER_LITER_PETROL = 15
-ELECTRICITY_CONSUMPTION_EV = 0.15  # kWh/km
-MONTHS_IN_5_YEARS = 60
-PETROL_EMISSION_FACTOR = 2.3 #kg CO2 per liter petrol
-EV_EMISSION_FACTOR = 0.7 #kg CO2 per kWh
-
 st.set_page_config(page_title="SustainOps AI", layout="centered")
 
-st.title("🚚 SustainOps AI - EV Decision Assistant")
-st.write("AI tool to help businesses evaluate Petrol vs EV over 5 years")
+st.title("🚚 SustainOps AI - Fleet Optimization Assistant")
+st.write("Analyze Petrol vs EV vs CNG based on cost, usage & sustainability")
 
-# --- OPTION ---
-option = st.radio("Choose Input Method", ["Manual Entry", "Upload File"])
+# =========================
+# CONSTANTS
+# =========================
+MONTHS = 60
+PETROL_EMISSION = 2.3
+EV_EMISSION = 0.7
+CNG_EMISSION = 2.0
 
-# --- CALCULATION FUNCTION ---
-def calculate(daily_distance_km, operating_days_per_month, fleet_size, petrol_price, electricity_price, petrol_vehicle_cost, ev_vehicle_cost):
-    """
-    Calculates the total cost and emissions for petrol and EV vehicles over 5 years.
+# =========================
+# CALCULATION FUNCTION
+# =========================
+def calculate(distance, days, fleet, petrol_price, electricity_price, cng_price,
+              petrol_vehicle_cost, ev_vehicle_cost, cng_vehicle_cost,
+              petrol_mileage, ev_efficiency, cng_mileage):
 
-    Args:
-        daily_distance_km (float): Daily distance traveled by each vehicle in km.
-        operating_days_per_month (int): Number of operating days per month.
-        fleet_size (int): Number of vehicles in the fleet.
-        petrol_price (float): Price of petrol per liter.
-        electricity_price (float): Price of electricity per kWh.
-        petrol_vehicle_cost (float): Cost of a petrol vehicle.
-        ev_vehicle_cost (float): Cost of an EV vehicle.
+    total_km = distance * days * fleet
 
-    Returns:
-        tuple: (petrol_total_5yr, ev_total_5yr, petrol_emissions, ev_emissions, savings_5yr, payback)
-    """
+    petrol_month = (total_km / petrol_mileage) * petrol_price
+    ev_month = (total_km * ev_efficiency) * electricity_price
+    cng_month = (total_km / cng_mileage) * cng_price
 
-    total_km = daily_distance_km * operating_days_per_month * fleet_size
+    petrol_5yr = petrol_month * MONTHS + petrol_vehicle_cost * fleet
+    ev_5yr = ev_month * MONTHS + ev_vehicle_cost * fleet
+    cng_5yr = cng_month * MONTHS + cng_vehicle_cost * fleet
 
-    petrol_cost_month = (total_km / KM_PER_LITER_PETROL) * petrol_price
-    ev_cost_month = (total_km * ELECTRICITY_CONSUMPTION_EV) * electricity_price
+    petrol_em = (total_km / petrol_mileage) * PETROL_EMISSION
+    ev_em = (total_km * ev_efficiency) * EV_EMISSION
+    cng_em = (total_km / cng_mileage) * CNG_EMISSION
 
-    petrol_total_5yr = petrol_cost_month * MONTHS_IN_5_YEARS + (petrol_vehicle_cost * fleet_size)
-    ev_total_5yr = ev_cost_month * MONTHS_IN_5_YEARS + (ev_vehicle_cost * fleet_size)
-
-    petrol_emissions = (total_km / KM_PER_LITER_PETROL) * PETROL_EMISSION_FACTOR
-    ev_emissions = (total_km * ELECTRICITY_CONSUMPTION_EV) * EV_EMISSION_FACTOR
-
-    savings_5yr = petrol_total_5yr - ev_total_5yr
-
-    extra_cost = (ev_vehicle_cost - petrol_vehicle_cost) * fleet_size
-    monthly_savings = petrol_cost_month - ev_cost_month
-
-    if monthly_savings > 0:
-        payback = extra_cost / monthly_savings
-    else:
-        payback = None
-
-    return petrol_total_5yr, ev_total_5yr, petrol_emissions, ev_emissions, savings_5yr, payback
-
-
-# --- RECOMMENDATION ---
-def recommend(savings_5yr, payback):
-    """
-    Recommends whether to switch to EV based on savings and payback period.
-
-    Args:
-        savings_5yr (float): Total savings over 5 years.
-        payback (float): Payback period in months.
-
-    Returns:
-        str: Recommendation string.
-    """
-    if savings_5yr > 0 and payback is not None and payback < 36:
-        return "✅ Strongly switch to EV"
-    elif savings_5yr > 0:
-        return "⚡ EV beneficial long-term"
-    else:
-        return "⛽ Stay with Petrol"
+    return petrol_5yr, ev_5yr, cng_5yr, petrol_em, ev_em, cng_em, total_km
 
 
 # =========================
 # 🟢 MANUAL INPUT
 # =========================
-if option == "Manual Entry":
+st.subheader("Enter Business Details")
 
-    st.subheader("Enter Business Details")
+vehicle_type = st.selectbox("Vehicle Type", ["Generic", "Tata Ace"])
 
-    daily_distance_km = st.number_input("Distance per day (km)", value=50, min_value=0)
-    operating_days_per_month = st.number_input("Operating days/month", value=26, min_value=1, max_value=31)
-    fleet_size = st.number_input("Fleet size", value=5, min_value=1)
-
-    petrol_price = st.number_input("Petrol price (₹)", value=100, min_value=0)
-    electricity_price = st.number_input("Electricity price (₹)", value=8, min_value=0)
-
-    petrol_vehicle_cost = st.number_input("Petrol vehicle cost (₹)", value=600000, min_value=0)
-    ev_vehicle_cost = st.number_input("EV vehicle cost (₹)", value=900000, min_value=0)
-
-    if st.button("Analyze"):
-        try:
-            petrol_total_5yr, ev_total_5yr, petrol_emissions, ev_emissions, savings_5yr, payback = calculate(
-                daily_distance_km, operating_days_per_month, fleet_size, petrol_price, electricity_price, petrol_vehicle_cost, ev_vehicle_cost
-            )
-
-            st.subheader("📊 Results")
-
-            st.write(f"Petrol 5-Year Cost: ₹{petrol_total_5yr:,.0f}")
-            st.write(f"EV 5-Year Cost: ₹{ev_total_5yr:,.0f}")
-            st.write(f"Savings: ₹{savings_5yr:,.0f}")
-
-            if payback is not None:
-                st.write(f"Payback: {payback:.1f} months")
-            else:
-                st.write("No payback")
-
-            st.write("Recommendation:", recommend(savings_5yr, payback))
-
-        except Exception as e:
-            st.error(f"An error occurred during calculation: {e}")
-
-
-# =========================
-# 🟡 FILE UPLOAD (CSV + EXCEL)
-# =========================
+if vehicle_type == "Tata Ace":
+    petrol_mileage = 18
+    ev_efficiency = 0.12
+    cng_mileage = 25
 else:
+    petrol_mileage = 15
+    ev_efficiency = 0.15
+    cng_mileage = 22
 
-    st.subheader("Upload CSV or Excel File")
+distance = st.number_input("Distance per day (km)", value=50)
+days = st.number_input("Operating days/month", value=26)
+fleet = st.number_input("Fleet size", value=5)
 
-    file = st.file_uploader("Upload file", type=["csv", "xlsx"])
+petrol_price = st.number_input("Petrol price (₹)", value=100)
+cng_price = st.number_input("CNG price (₹/kg)", value=80)
+electricity_price = st.number_input("Electricity price (₹)", value=8)
 
-    if file:
-        try:
-            # Detect file type
-            if file.name.endswith(".csv"):
-                df = pd.read_csv(file)
-            elif file.name.endswith(".xlsx"):
-                df = pd.read_excel(file)
-            else:
-                raise ValueError("Invalid file type. Only CSV and Excel files are supported.")
+petrol_vehicle_cost = st.number_input("Petrol vehicle cost (₹)", value=600000)
+ev_vehicle_cost = st.number_input("EV vehicle cost (₹)", value=900000)
+cng_vehicle_cost = st.number_input("CNG vehicle cost (₹)", value=650000)
 
-            st.write("Preview Data")
-            st.write(df.head())
+if st.button("Analyze Manual Data"):
 
-            required_columns = ["distance", "days", "fleet", "petrol_price", "electricity_price", "petrol_vehicle_cost", "ev_vehicle_cost", "business_name", "city", "state"]
-            for col in required_columns:
-                if col not in df.columns:
-                    raise KeyError(f"Required column '{col}' is missing in the uploaded file.")
+    petrol_5yr, ev_5yr, cng_5yr, petrol_em, ev_em, cng_em, total_km = calculate(
+        distance, days, fleet,
+        petrol_price, electricity_price, cng_price,
+        petrol_vehicle_cost, ev_vehicle_cost, cng_vehicle_cost,
+        petrol_mileage, ev_efficiency, cng_mileage
+    )
 
-            for i, row in df.iterrows():
-                try:
-                    petrol_total_5yr, ev_total_5yr, petrol_emissions, ev_emissions, savings_5yr, payback = calculate(
-                        row["distance"], row["days"], row["fleet"],
-                        row["petrol_price"], row["electricity_price"],
-                        row["petrol_vehicle_cost"], row["ev_vehicle_cost"]
-                    )
+    st.subheader("📊 Cost Comparison (5 Years)")
+    st.write(f"🚗 Petrol: ₹{petrol_5yr:,.0f}")
+    st.write(f"⚡ EV: ₹{ev_5yr:,.0f}")
+    st.write(f"🟢 CNG: ₹{cng_5yr:,.0f}")
 
-                    st.write(f"### {row['business_name']} ({row['city']}, {row['state']})")
+    st.subheader("🌍 Emissions")
+    st.write(f"Petrol: {petrol_em:.1f} kg CO2")
+    st.write(f"EV: {ev_em:.1f} kg CO2")
+    st.write(f"CNG: {cng_em:.1f} kg CO2")
 
-                    st.write(f"Petrol Cost: ₹{petrol_total_5yr:,.0f}")
-                    st.write(f"EV Cost: ₹{ev_total_5yr:,.0f}")
-                    st.write(f"Savings: ₹{savings_5yr:,.0f}")
+    st.subheader("📏 Usage Analysis")
+    st.write(f"Total KM per month: {total_km:,.0f} km")
+    st.write(f"Total KM over 5 years: {total_km * MONTHS:,.0f} km")
 
-                    if payback is not None:
-                        st.write(f"Payback: {payback:.1f} months")
-                    else:
-                        st.write("No payback")
+    # Recommendation
+    costs = {"Petrol": petrol_5yr, "EV": ev_5yr, "CNG": cng_5yr}
+    best = min(costs, key=costs.get)
 
-                    st.write("Recommendation:", recommend(savings_5yr, payback))
-                    st.markdown("---")  # Visual separation
+    st.subheader("🤖 Recommendation")
+    st.success(f"Best Option: {best}")
 
-                except Exception as e:
-                    st.error(f"Error processing row {i+2}: {e}") #i+2 as i starts from 0 and the header is row 1
+    if best == "EV":
+        st.write("⚡ EV is recommended because:")
+        st.write("- High daily usage → low running cost advantage")
+        st.write("- Maximum savings over 5 years")
+        st.write("- Lower emissions (sustainable option)")
 
-        except FileNotFoundError:
-            st.error("File not found. Please upload a valid file.")
-        except pd.errors.EmptyDataError:
-            st.error("The uploaded file is empty.")
-        except KeyError as e:
-            st.error(str(e))
-        except ValueError as e:
-            st.error(str(e))
-        except Exception as e:
-            st.error(f"An unexpected error occurred: {e}")
+    elif best == "CNG":
+        st.write("🟢 CNG is recommended because:")
+        st.write("- Moderate fuel cost compared to petrol")
+        st.write("- Suitable for medium usage businesses")
 
-              
+    else:
+        st.write("🚗 Petrol is recommended because:")
+        st.write("- Lower upfront investment")
+        st.write("- Suitable for low distance usage")
+
+
+# =========================
+# 🟡 FILE UPLOAD
+# =========================
+st.subheader("📂 Upload Business Dataset")
+
+file = st.file_uploader("Upload CSV or Excel file", type=["csv", "xlsx"])
+
+if file is not None:
+
+    if file.name.endswith(".csv"):
+        df = pd.read_csv(file)
+    else:
+        df = pd.read_excel(file)
+
+    st.write("📄 Preview Data")
+    st.dataframe(df.head())
+
+    st.subheader("📊 Results from Uploaded Data")
+
+    for i, row in df.iterrows():
+
+        if row["vehicle_type"] == "Tata Ace":
+            petrol_mileage = 18
+            ev_efficiency = 0.12
+            cng_mileage = 25
+        else:
+            petrol_mileage = 15
+            ev_efficiency = 0.15
+            cng_mileage = 22
+
+        petrol_5yr, ev_5yr, cng_5yr, petrol_em, ev_em, cng_em, total_km = calculate(
+            row["distance"], row["days"], row["fleet"],
+            row["petrol_price"], row["electricity_price"], row["cng_price"],
+            row["petrol_vehicle_cost"], row["ev_vehicle_cost"], row["cng_vehicle_cost"],
+            petrol_mileage, ev_efficiency, cng_mileage
+        )
+
+        st.write(f"### {row['business_name']} ({row['city']}, {row['state']})")
+
+        st.write(f"🚗 Petrol: ₹{petrol_5yr:,.0f}")
+        st.write(f"⚡ EV: ₹{ev_5yr:,.0f}")
+        st.write(f"🟢 CNG: ₹{cng_5yr:,.0f}")
+
+        st.write(f"📏 Monthly KM: {total_km:,.0f}")
+        st.write(f"📏 5-Year KM: {total_km * MONTHS:,.0f}")
+
+        costs = {"Petrol": petrol_5yr, "EV": ev_5yr, "CNG": cng_5yr}
+        best = min(costs, key=costs.get)
+
+        st.success(f"Best Option: {best}")
+
+        if best == "EV":
+            st.write("Reason: High usage → EV gives maximum savings")
+        elif best == "CNG":
+            st.write("Reason: Moderate usage → CNG is cost-efficient")
+        else:
+            st.write("Reason: Low usage → Petrol is better option")
+
+        st.write("---")
