@@ -12,7 +12,7 @@ st.write("AI agent that analyzes, decides, and recommends fleet strategy")
 mode = st.radio("Choose Mode", ["Manual Input", "Upload Dataset"])
 
 # =========================
-# CALCULATION FUNCTION (TOOL)
+# CALCULATION FUNCTION
 # =========================
 def calculate(distance, days, fleet, petrol_price, electricity_price, cng_price,
               petrol_vehicle_cost, ev_vehicle_cost, cng_vehicle_cost,
@@ -32,7 +32,7 @@ def calculate(distance, days, fleet, petrol_price, electricity_price, cng_price,
 
 
 # =========================
-# 🟢 MANUAL INPUT MODE
+# 🟢 MANUAL INPUT
 # =========================
 if mode == "Manual Input":
 
@@ -56,13 +56,13 @@ if mode == "Manual Input":
     years = st.number_input("Years for analysis", value=5)
     months = years * 12
 
-    petrol_price = st.number_input("Petrol price", 100)
-    cng_price = st.number_input("CNG price", 80)
-    electricity_price = st.number_input("Electricity price", 8)
+    petrol_price = st.number_input("Petrol price (₹)", value=100)
+    cng_price = st.number_input("CNG price (₹)", value=80)
+    electricity_price = st.number_input("Electricity price (₹)", value=8)
 
-    petrol_cost = st.number_input("Petrol vehicle cost", 600000)
-    ev_cost = st.number_input("EV vehicle cost", 900000)
-    cng_cost = st.number_input("CNG vehicle cost", 650000)
+    petrol_cost = st.number_input("Petrol vehicle cost (₹)", value=600000)
+    ev_cost = st.number_input("EV vehicle cost (₹)", value=900000)
+    cng_cost = st.number_input("CNG vehicle cost (₹)", value=650000)
 
     if st.button("Run Analysis"):
 
@@ -74,7 +74,6 @@ if mode == "Manual Input":
         )
 
         st.subheader("📊 Results")
-
         st.write(f"🚗 Petrol: ₹{petrol:,.0f}")
         st.write(f"⚡ EV: ₹{ev:,.0f}")
         st.write(f"🟢 CNG: ₹{cng:,.0f}")
@@ -82,22 +81,22 @@ if mode == "Manual Input":
         st.write(f"📏 Monthly KM: {total_km:,.0f}")
         st.write(f"📏 {years} Year KM: {total_km * months:,.0f}")
 
-        costs = {"Petrol": petrol, "EV": ev, "CNG": cng}
-        best = min(costs, key=costs.get)
+        best = min({"Petrol": petrol, "EV": ev, "CNG": cng},
+                   key={"Petrol": petrol, "EV": ev, "CNG": cng}.get)
 
+        st.subheader("🤖 Recommendation")
         st.success(f"Best Option: {best}")
 
-        # Agent explanation
         if best == "EV":
-            st.write("🤖 AI Insight: High usage detected → EV gives maximum savings.")
+            st.write("⚡ High usage → EV gives maximum savings and lower emissions")
         elif best == "CNG":
-            st.write("🤖 AI Insight: Moderate usage → CNG is cost-efficient.")
+            st.write("🟢 Moderate usage → CNG is cost-efficient")
         else:
-            st.write("🤖 AI Insight: Low usage → Petrol is better option.")
+            st.write("🚗 Low usage → Petrol is better due to low upfront cost")
 
 
 # =========================
-# 🟡 UPLOAD MODE (AGENTIC)
+# 🟡 UPLOAD DATASET
 # =========================
 else:
 
@@ -107,9 +106,17 @@ else:
 
     if file:
 
-        df = pd.read_csv(file) if file.name.endswith(".csv") else pd.read_excel(file)
+        # ✅ SAFE FILE READ
+        try:
+            if file.name.endswith(".csv"):
+                df = pd.read_csv(file)
+            else:
+                df = pd.read_excel(file)
+        except Exception:
+            st.error("❌ Error reading file. Please upload valid CSV or Excel.")
+            st.stop()
 
-        st.write("Preview Data")
+        st.write("📄 Preview Data")
         st.dataframe(df.head())
 
         total_km_all = 0
@@ -117,6 +124,8 @@ else:
         ev_count = 0
         cng_count = 0
         petrol_count = 0
+
+        st.subheader("📊 AI Analysis")
 
         for _, row in df.iterrows():
 
@@ -151,33 +160,51 @@ else:
             else:
                 petrol_count += 1
 
-        # Agent summary
+            st.write(f"🔹 {row['business_name']} → Best: {best}")
+
+        # =========================
+        # 🤖 AGENT SUMMARY
+        # =========================
         st.subheader("🤖 AI Agent Summary")
 
-        st.write(f"Total Fleet: {total_fleet}")
+        st.write(f"Total Fleet Size: {total_fleet}")
         st.write(f"Total Monthly KM: {total_km_all:,.0f}")
 
-        st.write(f"EV best: {ev_count}")
-        st.write(f"CNG best: {cng_count}")
-        st.write(f"Petrol best: {petrol_count}")
+        st.write(f"⚡ EV Best: {ev_count}")
+        st.write(f"🟢 CNG Best: {cng_count}")
+        st.write(f"🚗 Petrol Best: {petrol_count}")
 
-        # Action recommendation
+        # =========================
+        # 🚀 ACTION RECOMMENDATION
+        # =========================
         st.subheader("🚀 Recommended Action")
 
-        if ev_count > cng_count and ev_count > petrol_count:
-            st.success("👉 Switch majority fleet to EV")
-        elif cng_count > petrol_count:
-            st.success("👉 Use CNG for cost optimization")
-        else:
-            st.success("👉 Continue with Petrol for low usage")
+        total = ev_count + cng_count + petrol_count
 
-        # Chat
+        if ev_count > cng_count and ev_count > petrol_count:
+            percent = int((ev_count / total) * 100)
+            st.success(f"👉 Switch approx {percent}% fleet to EV")
+
+        elif cng_count > petrol_count:
+            percent = int((cng_count / total) * 100)
+            st.success(f"👉 Use CNG for approx {percent}% fleet")
+
+        else:
+            st.success("👉 Continue Petrol for low usage scenarios")
+
+        # =========================
+        # 💬 SIMPLE AI CHAT
+        # =========================
         st.subheader("💬 Ask AI")
 
         q = st.text_input("Ask: Should I switch to EV?")
 
         if q:
-            if "ev" in q.lower():
-                st.write("AI: EV is best for high usage and long-term savings.")
+            q = q.lower()
+
+            if "ev" in q:
+                st.write("🤖 EV is best for high daily usage and long-term savings.")
+            elif "cng" in q:
+                st.write("🤖 CNG is good for moderate usage and cost balance.")
             else:
-                st.write("AI: Decision depends on usage and cost.")
+                st.write("🤖 Decision depends on usage, fleet size, and cost.")
