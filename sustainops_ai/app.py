@@ -74,6 +74,7 @@ if mode == "Manual Input":
         )
 
         st.subheader("📊 Results")
+
         st.write(f"🚗 Petrol: ₹{petrol:,.0f}")
         st.write(f"⚡ EV: ₹{ev:,.0f}")
         st.write(f"🟢 CNG: ₹{cng:,.0f}")
@@ -106,14 +107,14 @@ else:
 
     if file:
 
-        # ✅ SAFE FILE READ
+        # ✅ FIXED FILE READING (STREAMLIT CLOUD SAFE)
         try:
             if file.name.endswith(".csv"):
                 df = pd.read_csv(file)
             else:
-                df = pd.read_excel(file)
-        except Exception:
-            st.error("❌ Error reading file. Please upload valid CSV or Excel.")
+                df = pd.read_excel(file, engine="openpyxl")
+        except Exception as e:
+            st.error(f"❌ Error reading file: {e}")
             st.stop()
 
         st.write("📄 Preview Data")
