@@ -107,12 +107,16 @@ else:
 
     if file:
 
-        # ✅ FIXED FILE READING (STREAMLIT CLOUD SAFE)
+        # ✅ SAFE FILE READING (WITH FALLBACK)
         try:
             if file.name.endswith(".csv"):
                 df = pd.read_csv(file)
             else:
-                df = pd.read_excel(file, engine="openpyxl")
+                try:
+                    df = pd.read_excel(file, engine="openpyxl")
+                except:
+                    st.warning("⚠️ Excel failed. Please upload CSV instead.")
+                    st.stop()
         except Exception as e:
             st.error(f"❌ Error reading file: {e}")
             st.stop()
